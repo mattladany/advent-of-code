@@ -1,36 +1,58 @@
 #!/usr/bin/env ruby
 
-def generatePossiblePasswordsCount(low, high)
+# Generates the number of combinations of numbers that satisfy a set of
+#   requirements within the given range.
+#
+# @param [Integer] low The low end of the range.
+# @param [Integer] high The high end of the range.
+# @return [Integer] The total count of valid combinations.
+def generatePossibleCombinationsCount(low, high)
     count = 0
-    for password in (low..high)
-        count += 1 if testPassword(password)
+    for number in (low..high)
+        count += 1 if testNumber(number)
     end
     count
 end
 
-def testPassword(password)
+# Test if the given number satisfies the following requirements:
+#   - The digits must be in ascending order.
+#   - There must exist a digits that repeats EXACTLY twice.
+#
+# @param [Integer] number The number being tested.
+# @return true on success; false otherwise.
+def testNumber(number)
 
     doubleFound = false
     previous = nil
     inARow = 0
-    for number in password.split('')
+
+    # Loop through each digit.
+    for digit in number.split('')
+
         if previous == nil
-            previous = number.to_i
-        elsif number.to_i == previous
+            previous = digit.to_i
+        elsif digit.to_i == previous
             inARow += 1
-            next
-        elsif number.to_i < previous
-            return false
+            next    # Skip re-initialization at the bottom of the loop.
+        elsif digit.to_i < previous
+            return false    # Short-circuit if this number is greater than the previous.
         end
+
+        # A double was only found if the number of identical numbers in
+        #   a row is two.
         doubleFound = true if inARow == 2
-        previous = number.to_i
+
+        # Re-initialize variables to account for the new number that was reached.
+        previous = digit.to_i
         inARow = 1
     end
 
+    
     return doubleFound || inARow == 2
 end
 
+# Get the current range.
 input = ARGV[0]
 range = input.split(/-/)
 
-puts generatePossiblePasswordsCount(range[0], range[1])
+puts generatePossibleCombinationsCount(range[0], range[1])
